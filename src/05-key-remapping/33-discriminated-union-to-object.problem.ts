@@ -12,12 +12,27 @@ type Route =
   | { route: "/admin"; search: {} }
   | { route: "/admin/users"; search: {} };
 
-type RoutesObject = unknown;
+// My Solution
+type RoutesObject = {
+  [K in Route as K extends { route: infer R extends string; search: any }
+    ? R
+    : never]: K["search"];
+};
+
+// Matt's solution 1
+type RoutesObject2 = {
+  [R in Route["route"]]: Extract<Route, { route: R }>["search"];
+};
+
+// Matt's solution 2
+type RoutesObject3 = {
+  [R in Route as R["route"]]: R["search"];
+};
 
 type tests = [
   Expect<
     Equal<
-      RoutesObject,
+      RoutesObject3,
       {
         "/": {
           page: string;
